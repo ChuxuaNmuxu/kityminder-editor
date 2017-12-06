@@ -6,11 +6,10 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var Minder = require('../minder');
 
-    function MinderRuntime() {
-
+    function MinderRuntime () {
         // 不使用 kityminder 的按键处理，由 ReceiverRuntime 统一处理
         var minder = new Minder({
             enableKeyReceiver: false,

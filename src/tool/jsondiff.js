@@ -7,8 +7,7 @@
  * @copyright: Baidu FEX, 2014
  */
 
-
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     /*!
     * https://github.com/Starcounter-Jack/Fast-JSON-Patch
     * json-patch-duplex.js 0.5.0
@@ -17,8 +16,7 @@ define(function(require, exports, module) {
     */
 
     var _objectKeys = (function () {
-        if (Object.keys)
-            return Object.keys;
+        if (Object.keys) { return Object.keys; }
 
         return function (o) {
             var keys = [];
@@ -30,13 +28,12 @@ define(function(require, exports, module) {
             return keys;
         };
     })();
-    function escapePathComponent(str) {
-        if (str.indexOf('/') === -1 && str.indexOf('~') === -1)
-            return str;
+    function escapePathComponent (str) {
+        if (str.indexOf('/') === -1 && str.indexOf('~') === -1) { return str; }
         return str.replace(/~/g, '~0').replace(/\//g, '~1');
     }
-    function deepClone(obj) {
-        if (typeof obj === "object") {
+    function deepClone (obj) {
+        if (typeof obj === 'object') {
             return JSON.parse(JSON.stringify(obj));
         } else {
             return obj;
@@ -44,7 +41,7 @@ define(function(require, exports, module) {
     }
 
     // Dirty check if obj is different from mirror, generate patches and update mirror
-    function _generate(mirror, obj, patches, path) {
+    function _generate (mirror, obj, patches, path) {
         var newKeys = _objectKeys(obj);
         var oldKeys = _objectKeys(mirror);
         var changed = false;
@@ -55,16 +52,16 @@ define(function(require, exports, module) {
             var oldVal = mirror[key];
             if (obj.hasOwnProperty(key)) {
                 var newVal = obj[key];
-                if (typeof oldVal == "object" && oldVal != null && typeof newVal == "object" && newVal != null) {
-                    _generate(oldVal, newVal, patches, path + "/" + escapePathComponent(key));
+                if (typeof oldVal === 'object' && oldVal != null && typeof newVal === 'object' && newVal != null) {
+                    _generate(oldVal, newVal, patches, path + '/' + escapePathComponent(key));
                 } else {
                     if (oldVal != newVal) {
                         changed = true;
-                        patches.push({ op: "replace", path: path + "/" + escapePathComponent(key), value: deepClone(newVal) });
+                        patches.push({ op: 'replace', path: path + '/' + escapePathComponent(key), value: deepClone(newVal) });
                     }
                 }
             } else {
-                patches.push({ op: "remove", path: path + "/" + escapePathComponent(key) });
+                patches.push({ op: 'remove', path: path + '/' + escapePathComponent(key) });
                 deleted = true; // property has been deleted
             }
         }
@@ -76,12 +73,12 @@ define(function(require, exports, module) {
         for (var t = 0; t < newKeys.length; t++) {
             var key = newKeys[t];
             if (!mirror.hasOwnProperty(key)) {
-                patches.push({ op: "add", path: path + "/" + escapePathComponent(key), value: deepClone(obj[key]) });
+                patches.push({ op: 'add', path: path + '/' + escapePathComponent(key), value: deepClone(obj[key]) });
             }
         }
     }
 
-    function compare(tree1, tree2) {
+    function compare (tree1, tree2) {
         var patches = [];
         _generate(tree1, tree2, patches, '');
         return patches;

@@ -6,13 +6,11 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
-
+define(function (require, exports, module) {
     var Hotbox = require('../hotbox');
 
-
     // Nice: http://unixpapa.com/js/key.html
-    function isIntendToInput(e) {
+    function isIntendToInput (e) {
         if (e.ctrlKey || e.metaKey || e.altKey) return false;
 
         // a-zA-Z
@@ -20,7 +18,7 @@ define(function(require, exports, module) {
 
         // 0-9 以及其上面的符号
         if (e.keyCode >= 48 && e.keyCode <= 57) return true;
-        
+
         // 小键盘区域 (除回车外)
         if (e.keyCode != 108 && e.keyCode >= 96 && e.keyCode <= 111) return true;
 
@@ -41,7 +39,8 @@ define(function(require, exports, module) {
      * @Editor: Naixor
      * @Date: 2015.09.14
      */
-    function JumpingRuntime() {
+    function JumpingRuntime () {
+        const kity = require('../kity');
         var fsm = this.fsm;
         var minder = this.minder;
         var receiver = this.receiver;
@@ -50,7 +49,7 @@ define(function(require, exports, module) {
         var hotbox = this.hotbox;
 
         // normal -> *
-        receiver.listen('normal', function(e) {
+        receiver.listen('normal', function (e) {
             // 为了防止处理进入edit模式而丢失处理的首字母,此时receiver必须为enable
             receiver.enable();
             // normal -> hotbox
@@ -69,27 +68,27 @@ define(function(require, exports, module) {
              * @Date 2015-12-2
              */
             switch (e.type) {
-                case 'keydown': {
-                    if (minder.getSelectedNode()) {
-                        if (isIntendToInput(e)) {
-                            return fsm.jump('input', 'user-input');
-                        };
-                    } else {
-                        receiverElement.innerHTML = '';
-                    }
+            case 'keydown': {
+                if (minder.getSelectedNode()) {
+                    if (isIntendToInput(e)) {
+                        return fsm.jump('input', 'user-input');
+                    };
+                } else {
+                    receiverElement.innerHTML = '';
+                }
                     // normal -> normal shortcut
-                    fsm.jump('normal', 'shortcut-handle', e);
-                    break;
-                }
-                case 'keyup': {
-                    break;
-                }
-                default: {}
+                fsm.jump('normal', 'shortcut-handle', e);
+                break;
+            }
+            case 'keyup': {
+                break;
+            }
+            default: {}
             }
         });
 
         // hotbox -> normal
-        receiver.listen('hotbox', function(e) {
+        receiver.listen('hotbox', function (e) {
             receiver.disable();
             e.preventDefault();
             var handleResult = hotbox.dispatch(e);
@@ -99,7 +98,7 @@ define(function(require, exports, module) {
         });
 
         // input => normal
-        receiver.listen('input', function(e) {
+        receiver.listen('input', function (e) {
             receiver.enable();
             if (e.type == 'keydown') {
                 if (e.is('Enter')) {
@@ -119,15 +118,14 @@ define(function(require, exports, module) {
             }
         });
 
-
-        //////////////////////////////////////////////
+        /// ///////////////////////////////////////////
         /// 右键呼出热盒
         /// 判断的标准是：按下的位置和结束的位置一致
-        //////////////////////////////////////////////
+        /// ///////////////////////////////////////////
         var downX, downY;
         var MOUSE_RB = 2; // 右键
 
-        container.addEventListener('mousedown', function(e) {
+        container.addEventListener('mousedown', function (e) {
             if (e.button == MOUSE_RB) {
                 e.preventDefault();
             }
@@ -140,18 +138,18 @@ define(function(require, exports, module) {
             }
         }, false);
 
-        container.addEventListener('mousewheel', function(e) {
+        container.addEventListener('mousewheel', function (e) {
             if (fsm.state() == 'hotbox') {
                 hotbox.active(Hotbox.STATE_IDLE);
                 fsm.jump('normal', 'mousemove-blur');
             }
         }, false);
 
-        container.addEventListener('contextmenu', function(e) {
+        container.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         });
 
-        container.addEventListener('mouseup', function(e) {
+        container.addEventListener('mouseup', function (e) {
             if (fsm.state() != 'normal') {
                 return;
             }
@@ -165,7 +163,7 @@ define(function(require, exports, module) {
         }, false);
 
         // 阻止热盒事件冒泡，在热盒正确执行前导致热盒关闭
-        hotbox.$element.addEventListener('mousedown', function(e) {
+        hotbox.$element.addEventListener('mousedown', function (e) {
             e.stopPropagation();
         });
     }

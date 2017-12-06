@@ -1,6 +1,5 @@
-define(function(require, exports, module) {
-
-    function NodeRuntime() {
+define(function (require, exports, module) {
+    function NodeRuntime () {
         var runtime = this;
         var minder = this.minder;
         var hotbox = this.hotbox;
@@ -15,12 +14,12 @@ define(function(require, exports, module) {
             '后移:Alt+Down:ArrangeDown',
             '删除:Delete|Backspace:RemoveNode',
             '上级:Shift+Tab|Shift+Insert:AppendParentNode'
-            //'全选:Ctrl+A:SelectAll'
+            // '全选:Ctrl+A:SelectAll'
         ];
 
         var AppendLock = 0;
 
-        buttons.forEach(function(button) {
+        buttons.forEach(function (button) {
             var parts = button.split(':');
             var label = parts.shift();
             var key = parts.shift();
@@ -29,7 +28,7 @@ define(function(require, exports, module) {
                 position: 'ring',
                 label: label,
                 key: key,
-                action: function() {
+                action: function () {
                     if (command.indexOf('Append') === 0) {
                         AppendLock++;
                         minder.execCommand(command, '分支主题');
@@ -47,7 +46,7 @@ define(function(require, exports, module) {
                         fsm.jump('normal', 'command-executed');
                     }
                 },
-                enable: function() {
+                enable: function () {
                     return minder.queryCommandState(command) != -1;
                 }
             });
@@ -57,7 +56,7 @@ define(function(require, exports, module) {
             position: 'bottom',
             label: '导入节点',
             key: 'Alt + V',
-            enable: function() {
+            enable: function () {
                 var selectedNodes = minder.getSelectedNodes();
                 return selectedNodes.length == 1;
             },
@@ -69,7 +68,7 @@ define(function(require, exports, module) {
             position: 'bottom',
             label: '导出节点',
             key: 'Alt + C',
-            enable: function() {
+            enable: function () {
                 var selectedNodes = minder.getSelectedNodes();
                 return selectedNodes.length == 1;
             },
@@ -77,15 +76,15 @@ define(function(require, exports, module) {
             next: 'idle'
         });
 
-        function importNodeData() {
+        function importNodeData () {
             minder.fire('importNodeData');
         }
 
-        function exportNodeData() {
+        function exportNodeData () {
             minder.fire('exportNodeData');
         }
 
-        //main.button({
+        // main.button({
         //    position: 'ring',
         //    key: '/',
         //    action: function(){
@@ -105,7 +104,7 @@ define(function(require, exports, module) {
         //            this.$button.children[0].innerHTML = '收起';
         //        }
         //    }
-        //})
+        // })
     }
 
     return module.exports = NodeRuntime;

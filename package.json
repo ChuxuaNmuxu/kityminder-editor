@@ -2,7 +2,7 @@
   "name": "kityminder-editor",
   "version": "1.0.60",
   "description": "A powerful mind map editor",
-  "main": "kityminder.editor.js",
+  "main": "/src/editor.js",
   "scripts": {
     "init": "npm i -g wr && npm install -g less && npm install -g bower && bower install && npm install",
     "dev": "npm run watch",

@@ -6,19 +6,18 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
-
+define(function (require, exports, module) {
     var Debug = require('../tool/debug');
     var debug = new Debug('fsm');
 
-    function handlerConditionMatch(condition, when, exit, enter) {
+    function handlerConditionMatch (condition, when, exit, enter) {
         if (condition.when != when) return false;
         if (condition.enter != '*' && condition.enter != enter) return false;
         if (condition.exit != '*' && condition.exit != exit) return;
         return true;
     }
 
-    function FSM(defaultState) {
+    function FSM (defaultState) {
         var currentState = defaultState;
         var BEFORE_ARROW = ' - ';
         var AFTER_ARROW = ' -> ';
@@ -32,7 +31,7 @@ define(function(require, exports, module) {
          * @param  {string} newState  新状态名称
          * @param  {any} reason 跳转的原因，可以作为参数传递给跳转监视器
          */
-        this.jump = function(newState, reason) {
+        this.jump = function (newState, reason) {
             if (!reason) throw new Error('Please tell fsm the reason to jump');
 
             var oldState = currentState;
@@ -64,13 +63,13 @@ define(function(require, exports, module) {
          * 返回当前状态
          * @return {string}
          */
-        this.state = function() {
+        this.state = function () {
             return currentState;
         };
 
         /**
          * 添加状态跳转监视器
-         * 
+         *
          * @param {string} condition
          *     监视的时机
          *         "* => *" （默认）
@@ -81,7 +80,7 @@ define(function(require, exports, module) {
          *         * to - 跳转后的状态
          *         * reason - 跳转的原因
          */
-        this.when = function(condition, handler) {
+        this.when = function (condition, handler) {
             if (arguments.length == 1) {
                 handler = condition;
                 condition = '* -> *';
@@ -113,7 +112,7 @@ define(function(require, exports, module) {
         };
     }
 
-    function FSMRumtime() {
+    function FSMRumtime () {
         this.fsm = new FSM('normal');
     }
 

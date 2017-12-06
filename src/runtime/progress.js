@@ -1,6 +1,5 @@
-define(function(require, exports, module){
-
-    function ProgressRuntime() {
+define(function (require, exports, module) {
+    function ProgressRuntime () {
         var minder = this.minder;
         var hotbox = this.hotbox;
 
@@ -11,18 +10,18 @@ define(function(require, exports, module){
             label: '进度',
             key: 'G',
             next: 'progress',
-            enable: function() {
+            enable: function () {
                 return minder.queryCommandState('progress') != -1;
             }
         });
 
         var progress = hotbox.state('progress');
-        '012345678'.replace(/./g, function(p) {
+        '012345678'.replace(/./g, function (p) {
             progress.button({
                 position: 'ring',
                 label: 'G' + p,
                 key: p,
-                action: function() {
+                action: function () {
                     minder.execCommand('Progress', parseInt(p) + 1);
                 }
             });
@@ -32,7 +31,7 @@ define(function(require, exports, module){
             position: 'center',
             label: '移除',
             key: 'Del',
-            action: function() {
+            action: function () {
                 minder.execCommand('Progress', 0);
             }
         });
@@ -43,10 +42,7 @@ define(function(require, exports, module){
             key: 'esc',
             next: 'back'
         });
-
-
     }
 
     return module.exports = ProgressRuntime;
-
 });

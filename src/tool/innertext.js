@@ -7,12 +7,11 @@
  * @copyright: Baidu FEX, 2014
  */
 
-
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     if ((!('innerText' in document.createElement('a'))) && ('getSelection' in window)) {
-        HTMLElement.prototype.__defineGetter__('innerText', function() {
+        HTMLElement.prototype.__defineGetter__('innerText', function () {
             var selection = window.getSelection(),
-                ranges    = [],
+                ranges = [],
                 str, i;
 
             // Save existing selections.
@@ -42,7 +41,7 @@ define(function(require, exports, module) {
             // String representation of the element, close to as rendered.
             return str;
         });
-        HTMLElement.prototype.__defineSetter__('innerText', function(text) {
+        HTMLElement.prototype.__defineSetter__('innerText', function (text) {
             /**
              * @Desc: 解决FireFox节点内容删除后text为null，出现报错的问题
              * @Editor: Naixor

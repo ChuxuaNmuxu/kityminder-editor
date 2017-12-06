@@ -1,3 +1,4 @@
-define(function(require, exports, module) {
-    return module.exports = window.kityminder.Minder;
+define(function (require, exports, module) {
+    const kityminder = require('./kity-minder');
+    return module.exports = kityminder.Minder;
 });

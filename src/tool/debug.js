@@ -6,12 +6,12 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var format = require('./format');
 
-    function noop() {}
+    function noop () {}
 
-    function stringHash(str) {
+    function stringHash (str) {
         var hash = 0;
         for (var i = 0; i < str.length; i++) {
             hash += str.charCodeAt(i);
@@ -20,7 +20,7 @@ define(function(require, exports, module) {
     }
 
     /* global console */
-    function Debug(flag) {
+    function Debug (flag) {
         var debugMode = this.flaged = window.location.search.indexOf(flag) != -1;
 
         if (debugMode) {
@@ -34,7 +34,7 @@ define(function(require, exports, module) {
                 'border-radius: 2px;', h);
 
             var textStyle = 'background: none; color: black;';
-            this.log = function() {
+            this.log = function () {
                 var output = format.apply(null, arguments);
                 console.log(format('%c{0}%c{1}', flag, output), flagStyle, textStyle);
             };

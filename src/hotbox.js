@@ -1,3 +1,4 @@
-define(function(require, exports, module) {
-    return module.exports = window.HotBox;
+define(function (require, exports, module) {
+    const HotBox = require('../components/hotbox/src/hotbox');
+    return module.exports = HotBox;
 });

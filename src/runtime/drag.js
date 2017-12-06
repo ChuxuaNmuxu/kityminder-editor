@@ -6,13 +6,13 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
-
+define(function (require, exports, module) {
+    const kity = require('../kity');
     var Hotbox = require('../hotbox');
     var Debug = require('../tool/debug');
     var debug = new Debug('drag');
 
-    function DragRuntime() {
+    function DragRuntime () {
         var fsm = this.fsm;
         var minder = this.minder;
         var hotbox = this.hotbox;
@@ -23,14 +23,13 @@ define(function(require, exports, module) {
         setupFsm();
 
         // listen the fsm changes, make action.
-        function setupFsm() {
-
+        function setupFsm () {
             // when jumped to drag mode, enter
-            fsm.when('* -> drag', function() {
+            fsm.when('* -> drag', function () {
                 // now is drag mode
             });
 
-            fsm.when('drag -> *', function(exit, enter, reason) {
+            fsm.when('drag -> *', function (exit, enter, reason) {
                 if (reason == 'drag-finish') {
                     // now exit drag mode
                 }
@@ -46,31 +45,31 @@ define(function(require, exports, module) {
         var freeHorizen = false, freeVirtical = false;
         var frame;
 
-        function move(direction, speed) {
+        function move (direction, speed) {
             if (!direction) {
                 freeHorizen = freeVirtical = false;
                 frame && kity.releaseFrame(frame);
-                frame = null;    
+                frame = null;
                 return;
             }
             if (!frame) {
                 frame = kity.requestFrame((function (direction, speed, minder) {
                     return function (frame) {
                         switch (direction) {
-                            case 'left':
-                                minder._viewDragger.move({x: -speed, y: 0}, 0);
-                                break;
-                            case 'top':
-                                minder._viewDragger.move({x: 0, y: -speed}, 0);
-                                break;
-                            case 'right':
-                                minder._viewDragger.move({x: speed, y: 0}, 0);
-                                break;
-                            case 'bottom':
-                                minder._viewDragger.move({x: 0, y: speed}, 0);
-                                break;
-                            default:
-                                return;
+                        case 'left':
+                            minder._viewDragger.move({x: -speed, y: 0}, 0);
+                            break;
+                        case 'top':
+                            minder._viewDragger.move({x: 0, y: -speed}, 0);
+                            break;
+                        case 'right':
+                            minder._viewDragger.move({x: speed, y: 0}, 0);
+                            break;
+                        case 'bottom':
+                            minder._viewDragger.move({x: 0, y: speed}, 0);
+                            break;
+                        default:
+                            return;
                         }
                         frame.next();
                     };
@@ -78,7 +77,7 @@ define(function(require, exports, module) {
             }
         }
 
-        minder.on('mousedown', function(e) {
+        minder.on('mousedown', function (e) {
             flag = MOUSE_HAS_DOWN;
             var rect = minder.getPaper().container.getBoundingClientRect();
             downX = e.originEvent.clientX;
@@ -88,10 +87,10 @@ define(function(require, exports, module) {
             maxY = rect.height;
         });
 
-        minder.on('mousemove', function(e) {
-            if (fsm.state() === 'drag' && flag == MOUSE_HAS_DOWN && minder.getSelectedNode()
-                && (Math.abs(downX - e.originEvent.clientX) > BOUND_CHECK
-                    || Math.abs(downY - e.originEvent.clientY) > BOUND_CHECK)) {
+        minder.on('mousemove', function (e) {
+            if (fsm.state() === 'drag' && flag == MOUSE_HAS_DOWN && minder.getSelectedNode() &&
+                (Math.abs(downX - e.originEvent.clientX) > BOUND_CHECK ||
+                    Math.abs(downY - e.originEvent.clientY) > BOUND_CHECK)) {
                 osx = e.originEvent.clientX;
                 osy = e.originEvent.clientY - containerY;
 
@@ -113,12 +112,11 @@ define(function(require, exports, module) {
                     move(false);
                 }
             }
-            if (fsm.state() !== 'drag'
-                && flag === MOUSE_HAS_DOWN
-                && minder.getSelectedNode()
-                && (Math.abs(downX - e.originEvent.clientX) > BOUND_CHECK
-                || Math.abs(downY - e.originEvent.clientY) > BOUND_CHECK)) {
-
+            if (fsm.state() !== 'drag' &&
+                flag === MOUSE_HAS_DOWN &&
+                minder.getSelectedNode() &&
+                (Math.abs(downX - e.originEvent.clientX) > BOUND_CHECK ||
+                Math.abs(downY - e.originEvent.clientY) > BOUND_CHECK)) {
                 if (fsm.state() === 'hotbox') {
                     hotbox.active(Hotbox.STATE_IDLE);
                 }

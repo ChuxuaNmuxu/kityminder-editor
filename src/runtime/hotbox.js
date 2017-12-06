@@ -6,10 +6,10 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var Hotbox = require('../hotbox');
 
-    function HotboxRuntime() {
+    function HotboxRuntime () {
         var fsm = this.fsm;
         var minder = this.minder;
         var receiver = this.receiver;
@@ -19,7 +19,7 @@ define(function(require, exports, module) {
 
         hotbox.setParentFSM(fsm);
 
-        fsm.when('normal -> hotbox', function(exit, enter, reason) {
+        fsm.when('normal -> hotbox', function (exit, enter, reason) {
             var node = minder.getSelectedNode();
             var position;
             if (node) {
@@ -32,7 +32,7 @@ define(function(require, exports, module) {
             hotbox.active('main', position);
         });
 
-        fsm.when('normal -> normal', function(exit, enter, reason, e) {
+        fsm.when('normal -> normal', function (exit, enter, reason, e) {
             if (reason == 'shortcut-handle') {
                 var handleResult = hotbox.dispatch(e);
                 if (handleResult) {
@@ -43,7 +43,7 @@ define(function(require, exports, module) {
             }
         });
 
-        fsm.when('modal -> normal', function(exit, enter, reason, e) {
+        fsm.when('modal -> normal', function (exit, enter, reason, e) {
             if (reason == 'import-text-finish') {
                 receiver.element.focus();
             }

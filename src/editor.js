@@ -1,18 +1,17 @@
-define(function(require, exports, module) {
-
+define(function (require, exports, module) {
     /**
      * 运行时
      */
     var runtimes = [];
 
-    function assemble(runtime) {
+    function assemble (runtime) {
         runtimes.push(runtime);
     }
 
-    function KMEditor(selector) {
+    function KMEditor (selector) {
         this.selector = selector;
         for (var i = 0; i < runtimes.length; i++) {
-            if (typeof runtimes[i] == 'function') {
+            if (typeof runtimes[i] === 'function') {
                 runtimes[i].call(this, this);
             }
         }
@@ -34,7 +33,6 @@ define(function(require, exports, module) {
     assemble(require('./runtime/jumping'));
     assemble(require('./runtime/priority'));
     assemble(require('./runtime/progress'));
-
 
     return module.exports = KMEditor;
 });

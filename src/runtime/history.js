@@ -7,11 +7,10 @@
  * @copyright: Baidu FEX, 2014
  */
 
-
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var jsonDiff = require('../tool/jsondiff');
 
-    function HistoryRuntime() {
+    function HistoryRuntime () {
         var minder = this.minder;
         var hotbox = this.hotbox;
 
@@ -22,13 +21,13 @@ define(function(require, exports, module) {
         var undoDiffs;
         var redoDiffs;
 
-        function reset() {
+        function reset () {
             undoDiffs = [];
             redoDiffs = [];
             lastSnap = minder.exportJson();
         }
 
-        function makeUndoDiff() {
+        function makeUndoDiff () {
             var headSnap = minder.exportJson();
             var diff = jsonDiff(headSnap, lastSnap);
             if (diff.length) {
@@ -41,13 +40,13 @@ define(function(require, exports, module) {
             }
         }
 
-        function makeRedoDiff() {
+        function makeRedoDiff () {
             var revertSnap = minder.exportJson();
             redoDiffs.push(jsonDiff(revertSnap, lastSnap));
             lastSnap = revertSnap;
         }
 
-        function undo() {
+        function undo () {
             patchLock = true;
             var undoDiff = undoDiffs.pop();
             if (undoDiff) {
@@ -57,7 +56,7 @@ define(function(require, exports, module) {
             patchLock = false;
         }
 
-        function redo() {
+        function redo () {
             patchLock = true;
             var redoDiff = redoDiffs.pop();
             if (redoDiff) {
@@ -67,32 +66,32 @@ define(function(require, exports, module) {
             patchLock = false;
         }
 
-        function changed() {
+        function changed () {
             if (patchLock) return;
             if (makeUndoDiff()) redoDiffs = [];
         }
 
-        function hasUndo() {
+        function hasUndo () {
             return !!undoDiffs.length;
         }
 
-        function hasRedo() {
+        function hasRedo () {
             return !!redoDiffs.length;
         }
 
-        function updateSelection(e) {
+        function updateSelection (e) {
             if (!patchLock) return;
             var patch = e.patch;
             switch (patch.express) {
-                case 'node.add':
-                    minder.select(patch.node.getChild(patch.index), true);
-                    break;
-                case 'node.remove':
-                case 'data.replace':
-                case 'data.remove':
-                case 'data.add':
-                    minder.select(patch.node, true);
-                    break;
+            case 'node.add':
+                minder.select(patch.node.getChild(patch.index), true);
+                break;
+            case 'node.remove':
+            case 'data.replace':
+            case 'data.remove':
+            case 'data.add':
+                minder.select(patch.node, true);
+                break;
             }
         }
 

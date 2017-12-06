@@ -6,20 +6,20 @@
  * @author: techird
  * @copyright: Baidu FEX, 2014
  */
-define(function(require, exports, module) {
-
+define(function (require, exports, module) {
+    const kity = require('../kity');
     require('../tool/innertext');
 
     var Debug = require('../tool/debug');
     var debug = new Debug('input');
 
-    function InputRuntime() {
+    function InputRuntime () {
         var fsm = this.fsm;
         var minder = this.minder;
         var hotbox = this.hotbox;
         var receiver = this.receiver;
         var receiverElement = receiver.element;
-        var isGecko = window.kity.Browser.gecko;
+        var isGecko = kity.Browser.gecko;
 
         // setup everything to go
         setupReciverElement();
@@ -29,21 +29,19 @@ define(function(require, exports, module) {
         // expose editText()
         this.editText = editText;
 
-
         // listen the fsm changes, make action.
-        function setupFsm() {
-
+        function setupFsm () {
             // when jumped to input mode, enter
             fsm.when('* -> input', enterInputMode);
 
             // when exited, commit or exit depends on the exit reason
-            fsm.when('input -> *', function(exit, enter, reason) {
+            fsm.when('input -> *', function (exit, enter, reason) {
                 switch (reason) {
-                    case 'input-cancel':
-                        return exitInputMode();
-                    case 'input-commit':
-                    default:
-                        return commitInputResult();
+                case 'input-cancel':
+                    return exitInputMode();
+                case 'input-commit':
+                default:
+                    return commitInputResult();
                 }
             });
 
@@ -60,26 +58,24 @@ define(function(require, exports, module) {
                 }
             });
 
-            minder.on('dblclick', function() {
+            minder.on('dblclick', function () {
                 if (minder.getSelectedNode() && minder._status !== 'readonly') {
                     editText();
                 }
             });
         }
 
-
         // let the receiver follow the current selected node position
-        function setupReciverElement() {
+        function setupReciverElement () {
             if (debug.flaged) {
                 receiverElement.classList.add('debug');
             }
 
-            receiverElement.onmousedown = function(e) {
+            receiverElement.onmousedown = function (e) {
                 e.stopPropagation();
             };
 
-            minder.on('layoutallfinish viewchange viewchanged selectionchange', function(e) {
-
+            minder.on('layoutallfinish viewchange viewchanged selectionchange', function (e) {
                 // viewchange event is too frequenced, lazy it
                 if (e.type == 'viewchange' && fsm.state() != 'input') return;
 
@@ -89,20 +85,18 @@ define(function(require, exports, module) {
             updatePosition();
         }
 
-
         // edit entrance in hotbox
-        function setupHotbox() {
+        function setupHotbox () {
             hotbox.state('main').button({
                 position: 'center',
                 label: '编辑',
                 key: 'F2',
-                enable: function() {
+                enable: function () {
                     return minder.queryCommandState('text') != -1;
                 },
                 action: editText
             });
         }
-
 
         /**
          * 增加对字体的鉴别，以保证用户在编辑状态ctrl/cmd + b/i所触发的加粗斜体与显示一致
@@ -110,13 +104,13 @@ define(function(require, exports, module) {
          * @Date 2015-12-2
          */
          // edit for the selected node
-        function editText() {
+        function editText () {
             var node = minder.getSelectedNode();
             if (!node) {
                 return;
             }
             var textContainer = receiverElement;
-            receiverElement.innerText = "";
+            receiverElement.innerText = '';
             if (node.getData('font-weight') === 'bold') {
                 var b = document.createElement('b');
                 textContainer.appendChild(b);
@@ -141,7 +135,7 @@ define(function(require, exports, module) {
          * @editor Naixor
          * @Date 2015-12-2
          */
-        function enterInputMode() {
+        function enterInputMode () {
             var node = minder.getSelectedNode();
             if (node) {
                 var fontSize = node.getData('font-size') || node.getStyle('font-size');
@@ -175,18 +169,18 @@ define(function(require, exports, module) {
                 isItalic = false;
 
             for (var str,
-                    _divChildNodes,
-                    space_l, space_num, tab_num,
-                    i = 0, l = textNodes.length; i < l; i++) {
+                _divChildNodes,
+                space_l, space_num, tab_num,
+                i = 0, l = textNodes.length; i < l; i++) {
                 str = textNodes[i];
 
                 switch (Object.prototype.toString.call(str)) {
                     // 正常情况处理
-                    case '[object HTMLBRElement]': {
-                        text += ENTER_CHAR;
-                        break;
-                    }
-                    case '[object Text]': {
+                case '[object HTMLBRElement]': {
+                    text += ENTER_CHAR;
+                    break;
+                }
+                case '[object Text]': {
                         // SG下会莫名其妙的加上&nbsp;影响后续判断，干掉！
                         /**
                          * FF下的wholeText会导致如下问题：
@@ -195,60 +189,72 @@ define(function(require, exports, module) {
                          *     |123abc| -> 此时123为一个TextNode为[#Text 123, #Text abc]，但是对这两个任意取值wholeText均为全部内容123abc
                          * 上述BUG仅存在在FF中，故将wholeText更改为textContent
                          */
-                        str = str.textContent.replace("&nbsp;", " ");
+                    str = str.textContent.replace('&nbsp;', ' ');
 
-                        if (!STR_CHECK.test(str)) {
-                            space_l = str.length;
-                            while (space_l--) {
-                                if (SPACE_CHAR_REGEXP.test(str[space_l])) {
-                                    text += SPACE_CHAR;
-                                } else if (str[space_l] === TAB_CHAR) {
-                                    text += TAB_CHAR;
-                                }
+                    if (!STR_CHECK.test(str)) {
+                        space_l = str.length;
+                        while (space_l--) {
+                            if (SPACE_CHAR_REGEXP.test(str[space_l])) {
+                                text += SPACE_CHAR;
+                            } else if (str[space_l] === TAB_CHAR) {
+                                text += TAB_CHAR;
                             }
-                        } else {
-                            text += str;
                         }
-                        break;
+                    } else {
+                        text += str;
                     }
+                    break;
+                }
                     // ctrl + b/i 会给字体加上<b>/<i>标签来实现黑体和斜体
-                    case '[object HTMLElement]': {
-                        switch (str.nodeName) {
-                            case "B": {
-                                isBold = true;
-                                break;
-                            }
-                            case "I": {
-                                isItalic = true;
-                                break;
-                            }
-                            default: {}
-                        }
-                        [].splice.apply(textNodes, [i, 1].concat([].slice.call(str.childNodes)));
-                        l = textNodes.length;
-                        i--;
+                case '[object HTMLElement]': {
+                    switch (str.nodeName) {
+                    case 'B': {
+                        isBold = true;
                         break;
                     }
+                    case 'I': {
+                        isItalic = true;
+                        break;
+                    }
+                    default: {}
+                    }
+                    [].splice.apply(textNodes, [i, 1].concat([].slice.call(str.childNodes)));
+                    l = textNodes.length;
+                    i--;
+                    break;
+                }
                     // 被增加span标签的情况会被处理成正常情况并会推交给上面处理
-                    case '[object HTMLSpanElement]': {
-                        [].splice.apply(textNodes, [i, 1].concat([].slice.call(str.childNodes)));
-                        l = textNodes.length;
-                        i--;
-                        break;
-                    }
+                case '[object HTMLSpanElement]': {
+                    [].splice.apply(textNodes, [i, 1].concat([].slice.call(str.childNodes)));
+                    l = textNodes.length;
+                    i--;
+                    break;
+                }
                     // 若标签为image标签，则判断是否为合法url，是将其加载进来
-                    case '[object HTMLImageElement]': {
-                        if (str.src) {
-                            if (/http(|s):\/\//.test(str.src)) {
-                                minder.execCommand("Image", str.src, str.alt);
-                            } else {
+                case '[object HTMLImageElement]': {
+                    if (str.src) {
+                        if (/http(|s):\/\//.test(str.src)) {
+                            minder.execCommand('Image', str.src, str.alt);
+                        } else {
                                 // data:image协议情况
-                            }
-                        };
-                        break;
-                    }
+                        }
+                    };
+                    break;
+                }
                     // 被增加div标签的情况会被处理成正常情况并会推交给上面处理
-                    case '[object HTMLDivElement]': {
+                case '[object HTMLDivElement]': {
+                    _divChildNodes = [];
+                    for (var di = 0, l = str.childNodes.length; di < l; di++) {
+                        _divChildNodes.push(str.childNodes[di]);
+                    }
+                    _divChildNodes.push(BR);
+                    [].splice.apply(textNodes, [i, 1].concat(_divChildNodes));
+                    l = textNodes.length;
+                    i--;
+                    break;
+                }
+                default: {
+                    if (str && str.childNodes.length) {
                         _divChildNodes = [];
                         for (var di = 0, l = str.childNodes.length; di < l; di++) {
                             _divChildNodes.push(str.childNodes[di]);
@@ -257,27 +263,15 @@ define(function(require, exports, module) {
                         [].splice.apply(textNodes, [i, 1].concat(_divChildNodes));
                         l = textNodes.length;
                         i--;
-                        break;
-                    }
-                    default: {
-                        if (str && str.childNodes.length) {
-                            _divChildNodes = [];
-                            for (var di = 0, l = str.childNodes.length; di < l; di++) {
-                                _divChildNodes.push(str.childNodes[di]);
-                            }
-                            _divChildNodes.push(BR);
-                            [].splice.apply(textNodes, [i, 1].concat(_divChildNodes));
-                            l = textNodes.length;
-                            i--;
+                    } else {
+                        if (str && str.textContent !== undefined) {
+                            text += str.textContent;
                         } else {
-                            if (str && str.textContent !== undefined) {
-                                text += str.textContent;
-                            } else {
-                                text += "";
-                            }
+                            text += '';
                         }
-                        // // 其他带有样式的节点被粘贴进来，则直接取textContent，若取不出来则置空
                     }
+                        // // 其他带有样式的节点被粘贴进来，则直接取textContent，若取不出来则置空
+                }
                 }
             };
 
@@ -306,10 +300,10 @@ define(function(require, exports, module) {
          * @Editor: Naixor
          * @Date: 2015.9.16
          */
-        function commitInputNode(node, text) {
+        function commitInputNode (node, text) {
             try {
-                minder.decodeData('text', text).then(function(json) {
-                    function importText(node, json, minder) {
+                minder.decodeData('text', text).then(function (json) {
+                    function importText (node, json, minder) {
                         var data = json.data;
 
                         node.setText(data.text || '');
@@ -322,12 +316,12 @@ define(function(require, exports, module) {
                         return node;
                     }
                     importText(node, json, minder);
-                    minder.fire("contentchange");
+                    minder.fire('contentchange');
                     minder.getRoot().renderTree();
                     minder.layout(300);
                 });
             } catch (e) {
-                minder.fire("contentchange");
+                minder.fire('contentchange');
                 minder.getRoot().renderTree();
 
                 // 无法被转换成脑图节点则不处理
@@ -337,7 +331,7 @@ define(function(require, exports, module) {
             }
         }
 
-        function commitInputResult() {
+        function commitInputResult () {
             /**
              * @Desc: 进行如下处理：
              *             根据用户的输入判断是否生成新的节点
@@ -355,7 +349,7 @@ define(function(require, exports, module) {
              */
             setTimeout(function () {
                 // 解决过大内容导致SVG窜位问题
-                receiverElement.innerHTML = "";
+                receiverElement.innerHTML = '';
             }, 0);
             var node = minder.getSelectedNode();
 
@@ -368,23 +362,23 @@ define(function(require, exports, module) {
             }
         }
 
-        function exitInputMode() {
+        function exitInputMode () {
             receiverElement.classList.remove('input');
             receiver.selectAll();
         }
 
-        function updatePosition() {
+        function updatePosition () {
             var planed = updatePosition;
 
             var focusNode = minder.getSelectedNode();
             if (!focusNode) return;
 
             if (!planed.timer) {
-                planed.timer = setTimeout(function() {
+                planed.timer = setTimeout(function () {
                     var box = focusNode.getRenderBox('TextRenderer');
                     receiverElement.style.left = Math.round(box.x) + 'px';
                     receiverElement.style.top = (debug.flaged ? Math.round(box.bottom + 30) : Math.round(box.y)) + 'px';
-                    //receiverElement.focus();
+                    // receiverElement.focus();
                     planed.timer = 0;
                 });
             }

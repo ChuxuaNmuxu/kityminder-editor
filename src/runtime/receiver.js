@@ -7,11 +7,11 @@
  * @copyright: Baidu FEX, 2014
  */
 
-define(function(require, exports, module) {
+define(function (require, exports, module) {
     var key = require('../tool/key');
-    var hotbox = require('hotbox');
+    var hotbox = require('./hotbox');
 
-    function ReceiverRuntime() {
+    function ReceiverRuntime () {
         var fsm = this.fsm;
         var minder = this.minder;
         var me = this;
@@ -24,7 +24,7 @@ define(function(require, exports, module) {
          * @Editor: Naixor
          * @Date: 2015.09.14
          */
-        element.setAttribute("tabindex", -1);
+        element.setAttribute('tabindex', -1);
         element.classList.add('receiver');
         element.onkeydown = element.onkeypress = element.onkeyup = dispatchKeyEvent;
         this.container.appendChild(element);
@@ -32,7 +32,7 @@ define(function(require, exports, module) {
         // receiver 对象
         var receiver = {
             element: element,
-            selectAll: function() {
+            selectAll: function () {
                 // 保证有被选中的
                 if (!element.innerHTML) element.innerHTML = '&nbsp;';
                 var range = document.createRange();
@@ -47,20 +47,20 @@ define(function(require, exports, module) {
              * @Editor: Naixor
              * @Date: 2015.09.14
              */
-            enable: function() {
-                element.setAttribute("contenteditable", true);
+            enable: function () {
+                element.setAttribute('contenteditable', true);
             },
-            disable: function() {
-                element.setAttribute("contenteditable", false);
+            disable: function () {
+                element.setAttribute('contenteditable', false);
             },
             /**
              * @Desc: hack FF下div contenteditable的光标丢失BUG
              * @Editor: Naixor
              * @Date: 2015.10.15
              */
-            fixFFCaretDisappeared: function() {
-                element.removeAttribute("contenteditable");
-                element.setAttribute("contenteditable", "true");
+            fixFFCaretDisappeared: function () {
+                element.removeAttribute('contenteditable');
+                element.setAttribute('contenteditable', 'true');
                 element.blur();
                 element.focus();
             },
@@ -77,7 +77,7 @@ define(function(require, exports, module) {
 
         minder.on('beforemousedown', receiver.selectAll);
         minder.on('receiverfocus', receiver.selectAll);
-        minder.on('readonly', function() {
+        minder.on('readonly', function () {
             // 屏蔽minder的事件接受，删除receiver和hotbox
             minder.disable();
             editor.receiver.element.parentElement.removeChild(editor.receiver.element);
@@ -88,7 +88,7 @@ define(function(require, exports, module) {
         var listeners = [];
 
         // 侦听指定状态下的事件，如果不传 state，侦听所有状态
-        receiver.listen = function(state, listener) {
+        receiver.listen = function (state, listener) {
             if (arguments.length == 1) {
                 listener = state;
                 state = '*';
@@ -97,8 +97,8 @@ define(function(require, exports, module) {
             listeners.push(listener);
         };
 
-        function dispatchKeyEvent(e) {
-            e.is = function(keyExpression) {
+        function dispatchKeyEvent (e) {
+            e.is = function (keyExpression) {
                 var subs = keyExpression.split('|');
                 for (var i = 0; i < subs.length; i++) {
                     if (key.is(this, subs[i])) return true;
@@ -107,7 +107,6 @@ define(function(require, exports, module) {
             };
             var listener, jumpState;
             for (var i = 0; i < listeners.length; i++) {
-
                 listener = listeners[i];
                 // 忽略不在侦听状态的侦听器
                 if (listener.notifyState != '*' && listener.notifyState != fsm.state()) {
@@ -140,5 +139,4 @@ define(function(require, exports, module) {
     }
 
     return module.exports = ReceiverRuntime;
-
 });
